@@ -2,12 +2,8 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <vector>
+#include "src/ImageService.hpp"
 
-// Déclaration des fonctions (signatures)
-void afficherUsage(const std::string &nomProgramme);
-std::vector<cv::Mat> chargerCubeMap(const std::string &dossierImages);
-cv::Mat convertirCubeMapEnEquirect(const std::vector<cv::Mat> &cubeMapFaces, int largeur, int hauteur);
-void sauvegarderImage(const cv::Mat &image, const std::string &cheminFichier);
 
 int main()
 {
@@ -26,15 +22,15 @@ int main()
 
         try
         {
-            vector<cv::Mat> cubeMapFaces = chargerCubeMap(cube_images_folder);
+            vector<cv::Mat> cubeMapFaces = loadCubeMap(cube_images_folder);
 
-            // TODO : Automatic determine width and height from the images
+            // TODO : Automatically determine width and height from the images
             int width = 20480;
             int height = 10240;
 
-            cv::Mat equirectImage = convertirCubeMapEnEquirect(cubeMapFaces, width, height);
+            cv::Mat equirectImage = convertCubeMapEnEquirect(cubeMapFaces, width, height);
 
-            sauvegarderImage(equirectImage, panorama_result_folder + "/panorama_result.jpg");
+            saveImage(equirectImage, panorama_result_folder + "/panorama_result.jpg");
 
             cout << "Conversion terminée. Image sauvegardée dans : " << panorama_result_folder << endl;
         }
