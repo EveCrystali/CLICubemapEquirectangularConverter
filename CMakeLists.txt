@@ -13,7 +13,7 @@ add_executable(AtisCloud ${SOURCES})
 # Ajout du dossier include/
 target_include_directories(AtisCloud PRIVATE include)
 
+set(OpenCV_DIR "C:/Program Files/opencv/build")  # Mets ici le chemin correct vers OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
-
 target_link_libraries(AtisCloud ${OpenCV_LIBS})
