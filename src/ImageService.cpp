@@ -7,7 +7,7 @@ using namespace std;
 std::vector<cv::Mat> loadCubeMap(const std::string &imagesFolder)
 {
     // File names of the cube map faces (adapt if necessary)
-    std::vector<std::string> faceNames = {"front.jpg", "right.jpg", "top.jpg", "bottom.jpg", "left.jpg", "back.jpg"};
+    std::vector<std::string> faceNames = {"left.jpg", "front.jpg", "right.jpg", "back.jpg", "bottom.jpg", "top.jpg"};
     std::vector<cv::Mat> cubeMapFacesList;
 
     for (const auto &faceName : faceNames)
@@ -31,14 +31,12 @@ cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat> &cubeFacesList)
 {
 
     // Correspondance des faces de la liste à la position des faces.
-    // cubeFacesList order : {"front.jpg", "right.jpg", "top.jpg", "bottom.jpg", "left.jpg", "back.jpg"};
-    cv::Mat posY = cubeFacesList[2]; // top
-    cv::Mat posX = cubeFacesList[0]; // front
-    cv::Mat negY = cubeFacesList[3]; // bottom
-    cv::Mat negX = cubeFacesList[4]; // left
-    cv::Mat negZ = cubeFacesList[5]; // back
-    cv::Mat posZ = cubeFacesList[1]; // right
-
+    cv::Mat posY = cubeFacesList[3]; 
+    cv::Mat posX = cubeFacesList[2]; 
+    cv::Mat negY = cubeFacesList[0]; 
+    cv::Mat negX = cubeFacesList[1]; 
+    cv::Mat negZ = cubeFacesList[4]; 
+    cv::Mat posZ = cubeFacesList[5]; 
     const int output_width = cubeFacesList[0].rows * 2;
     const int output_height = cubeFacesList[0].rows;
     const int square_length = output_height;
