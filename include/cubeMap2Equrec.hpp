@@ -6,7 +6,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-
 struct cart2D {
     float x;
     float y;

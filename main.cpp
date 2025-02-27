@@ -1,6 +1,5 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <iostream>
 #include <vector>
 #include "ImageService.hpp"
 
@@ -28,16 +27,14 @@ int main()
 
             cout << "Conversion terminée. Image sauvegardée dans : " << panorama_result_folder << endl;
         }
-        catch (const std::exception &e)
+        catch (const std::exception& e)
         {
             cerr << "Erreur : " << e.what() << endl;
             return -1;
         }
-        
+
         cv::waitKey();
 
         return 0;
     }
 }
-
-

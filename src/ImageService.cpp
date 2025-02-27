@@ -4,13 +4,12 @@
 
 using namespace std;
 
-std::vector<cv::Mat> loadCubeMap(const std::string &imagesFolder)
+std::vector<cv::Mat> loadCubeMap(const std::string& imagesFolder)
 {
-    // File names of the cube map faces (adapt if necessary)
     std::vector<std::string> faceNames = {"left.jpg", "front.jpg", "right.jpg", "back.jpg", "bottom.jpg", "top.jpg"};
     std::vector<cv::Mat> cubeMapFacesList;
 
-    for (const auto &faceName : faceNames)
+    for (const auto& faceName : faceNames)
     {
         std::string imagePath = imagesFolder + "/" + faceName;
         cv::Mat image = cv::imread(imagePath);
@@ -27,16 +26,22 @@ std::vector<cv::Mat> loadCubeMap(const std::string &imagesFolder)
     return cubeMapFacesList;
 }
 
-cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat> &cubeFacesList)
+cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat>& cubeFacesList)
 {
-
-    // Correspondance des faces de la liste à la position des faces.
+    // Correspondence of the cube map faces to their positions.
+    // Extract images from cube map from a single file with the following format:
+    //		+----+----+----+
+    //		| Y+ | X+ | Y- |
+    //		+----+----+----+
+    //		| X- | Z- | Z+ |
+    //		+----+----+----+
     cv::Mat posY = cubeFacesList[3]; 
     cv::Mat posX = cubeFacesList[2]; 
     cv::Mat negY = cubeFacesList[0]; 
     cv::Mat negX = cubeFacesList[1]; 
     cv::Mat negZ = cubeFacesList[4]; 
     cv::Mat posZ = cubeFacesList[5]; 
+
     const int output_width = cubeFacesList[0].rows * 2;
     const int output_height = cubeFacesList[0].rows;
     const int square_length = output_height;
@@ -55,14 +60,14 @@ cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat> &cubeFacesList)
         for (int i = 0; i < destination.rows; i++)
         {
             // 2. Get the normalised u,v coordinates for the current pixel
-            float U = (float)j / (output_width - 1); // 0..1
-            float V = (float)i /
-                      (output_height - 1); // No need for 1-... as the image output
-                                           // needs to start from the top anyway.
+            float U = static_cast<float>(j) / (output_width - 1); // 0..1
+            float V = static_cast<float>(i) /
+                (output_height - 1); // No need for 1-... as the image output
+            // needs to start from the top anyway.
             // 3. Taking the normalised cartesian coordinates calculate the polar
             // coordinate for the current pixel
             float theta = U * 2 * M_PI; // M_PI is defined in math.h when _USE_MATH_DEFINES is defined
-            float phi = V * M_PI;       // M_PI is defined in math.h when _USE_MATH_DEFINES is defined
+            float phi = V * M_PI; // M_PI is defined in math.h when _USE_MATH_DEFINES is defined
             // 4. calculate the 3D cartesian coordinate which has been projected to
             // a cubes face
             cart2D cart = convertEquirectUVtoUnit2D(theta, phi, square_length);
@@ -70,8 +75,8 @@ cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat> &cubeFacesList)
             // 5. use this pixel to extract the colour
             cv::Vec3b val;
             // clamp the values to be inside the image
-            cart.x = std::max(0.0f, std::min((float)(square_length - 1), cart.x));
-            cart.y = std::max(0.0f, std::min((float)(square_length - 1), cart.y));
+            cart.x = std::max(0.0f, std::min(static_cast<float>(square_length - 1), cart.x));
+            cart.y = std::max(0.0f, std::min(static_cast<float>(square_length - 1), cart.y));
             if (cart.faceIndex == X_POS)
             {
                 val = posX.at<cv::Vec3b>(cart.y, cart.x);
@@ -108,9 +113,9 @@ cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat> &cubeFacesList)
     return destination;
 }
 
-void saveImage(const cv::Mat &image, const std::string &filePath)
+void saveImage(const cv::Mat& image, const std::string& filePath)
 {
-    if (!cv::imwrite(filePath, image))
+    if (!imwrite(filePath, image))
     {
         throw std::runtime_error("Impossible de sauvegarder l'image dans le fichier : " + filePath);
     }
