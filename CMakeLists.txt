@@ -1,22 +1,34 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Définition du projet
-project(AtisCloud)
+# Nom du projet
+project(Exo_AC_C__)
 
 # Utilisation du standard C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-add_executable(AtisCloud main.cpp ${SOURCES})
+# Ajouter les répertoires include
+include_directories(include)
 
-# Ajout du dossier include/
-target_include_directories(AtisCloud PRIVATE include)
-
-# Ajout du dossier src/
-target_include_directories(AtisCloud PRIVATE src)
-
-set(OpenCV_DIR "C:/Program Files/opencv/build")  # Mets ici le chemin correct vers OpenCV
+# Trouver OpenCV
+set(OpenCV_DIR "C:/Program Files/opencv/build") # Chemin vers OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
-target_link_libraries(AtisCloud ${OpenCV_LIBS})
+
+# Ajouter les fichiers sources pour ImageService
+set(IMAGESERVICE_SRC src/ImageService.cpp)
+add_library(ImageService ${IMAGESERVICE_SRC})
+target_include_directories(ImageService PRIVATE include)
+target_link_libraries(ImageService ${OpenCV_LIBS})
+
+# Ajouter les fichiers sources pour cubeMap2Equrec
+set(CUBEMAP_SRC src/cubeMap2Equrec.cpp)
+add_library(cubeMap2Equrec ${CUBEMAP_SRC})
+target_include_directories(cubeMap2Equrec PRIVATE include)
+target_link_libraries(cubeMap2Equrec ${OpenCV_LIBS})
+
+# Ajouter l'exécutable principal
+add_executable(Exo_AC_C__ main.cpp)
+
+# Lier les bibliothèques à l'exécutable principal
+target_link_libraries(Exo_AC_C__ ImageService cubeMap2Equrec ${OpenCV_LIBS})

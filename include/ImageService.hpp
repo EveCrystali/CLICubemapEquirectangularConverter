@@ -1,0 +1,13 @@
+#include <iostream>
+#include <opencv2/opencv.hpp>
+#include <iostream>
+#include <vector>
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+
+
+// Déclaration des fonctions (signatures)
+std::vector<cv::Mat> loadCubeMap(const std::string &imagesFolder);
+cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat> &cubeMapFaces);
+void saveImage(const cv::Mat &image, const std::string &filePath);
