@@ -3,7 +3,6 @@
 
 using namespace std;
 
-
 cv::Vec2f unit3DToUnit2D(float x, float y, float z, int faceIndex)
 {
   float x2D, y2D;
@@ -68,15 +67,16 @@ cart3D projectY(float theta, float phi, float sign)
   return result;
 }
 
-cart3D projectZ(float theta, float phi, float sign)
+cart3D projectZ(float theta, float phi, float sign, float shift)
 {
   cart3D result;
 
   result.z = sign * 0.5;
   result.faceIndex = sign > 0 ? Z_POS : Z_NEG;
   float rho = result.z / cos(phi);
-  result.x = rho * cos(theta) * sin(phi);
-  result.y = rho * sin(theta) * sin(phi);
+  // Add the shift
+  result.x = rho * cos(theta - shift) * sin(phi);
+  result.y = rho * sin(theta - shift) * sin(phi);
   return result;
 }
 
@@ -95,6 +95,7 @@ cart2D convertEquirectUVtoUnit2D(float theta, float phi, int square_length)
 
     // Project ray to cube surface
     cart3D equirectUV;
+    float shift = M_PI / 2.0; // 90 degrees shift
     if (abs(xx) > abs(yy) && abs(xx) > abs(zz)){
         equirectUV = projectX(theta, phi, xx);
     }
@@ -102,7 +103,7 @@ cart2D convertEquirectUVtoUnit2D(float theta, float phi, int square_length)
         equirectUV = projectY(theta, phi, yy);
     }
     else{
-        equirectUV = projectZ(theta, phi, zz);
+        equirectUV = projectZ(theta, phi, zz, shift);
     }
 
     cv::Vec2f unit2D = unit3DToUnit2D(equirectUV.x, equirectUV.y, equirectUV.z,

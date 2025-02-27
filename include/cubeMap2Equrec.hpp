@@ -3,6 +3,8 @@
 #include <chrono> // for high_resolution_clock
 #include <iostream>
 #include <omp.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 struct cart2D {
