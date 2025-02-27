@@ -1,6 +1,6 @@
 #include "ImageService.hpp"
 #include "cubeMap2Equrec.hpp"
-
+#include <algorithm>
 
 using namespace std;
 
@@ -71,6 +71,9 @@ cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat> &cubeFacesList)
 
             // 5. use this pixel to extract the colour
             cv::Vec3b val;
+            // clamp the values to be inside the image
+            cart.x = std::max(0.0f, std::min((float)(square_length - 1), cart.x));
+            cart.y = std::max(0.0f, std::min((float)(square_length - 1), cart.y));
             if (cart.faceIndex == X_POS)
             {
                 val = posX.at<cv::Vec3b>(cart.y, cart.x);
