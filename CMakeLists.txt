@@ -5,30 +5,26 @@ project(Exo_AC_C__)
 
 # Utilisation du standard C++
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Ajouter les répertoires include
-include_directories(include)
+# Répertoire des headers de votre projet
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
-# Trouver OpenCV
-set(OpenCV_DIR "C:/Program Files/opencv/build") # Chemin vers OpenCV
+# Récupération automatique de tous les fichiers .cpp du dossier src
+file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
+
+# Création de l'exécutable principal avec main.cpp et les autres sources
+add_executable(${PROJECT_NAME} main.cpp ${SOURCES})
+
+# Définir le chemin vers le fichier de configuration CMake d'OpenCV
+set(OpenCV_DIR "C:/Program Files/opencv/build/x64/vc16/lib")
+# Recherche d'OpenCV
 find_package(OpenCV REQUIRED)
+
+
+# Ajout des répertoires d'includes fournis par OpenCV
 include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories("C:/Program Files/opencv/build/include/opencv2")
 
-# Ajouter les fichiers sources pour ImageService
-set(IMAGESERVICE_SRC src/ImageService.cpp)
-add_library(ImageService ${IMAGESERVICE_SRC})
-target_include_directories(ImageService PRIVATE include)
-target_link_libraries(ImageService ${OpenCV_LIBS})
-
-# Ajouter les fichiers sources pour cubeMap2Equrec
-set(CUBEMAP_SRC src/cubeMap2Equrec.cpp)
-add_library(cubeMap2Equrec ${CUBEMAP_SRC})
-target_include_directories(cubeMap2Equrec PRIVATE include)
-target_link_libraries(cubeMap2Equrec ${OpenCV_LIBS})
-
-# Ajouter l'exécutable principal
-add_executable(Exo_AC_C__ main.cpp)
-
-# Lier les bibliothèques à l'exécutable principal
-target_link_libraries(Exo_AC_C__ ImageService cubeMap2Equrec ${OpenCV_LIBS})
+# Liaison de l'exécutable avec les bibliothèques OpenCV trouvées
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
