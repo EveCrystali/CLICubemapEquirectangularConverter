@@ -66,17 +66,18 @@ int main() {
 
       cout << "Conversion terminée." << endl;
 
-      // Signal the end of processing
-      processingDone = true;
-      // Wait for the loading animation to finish
-      loadingThread.join();
-
+      stopAnimation();
+      if (loadingThread.joinable()) {
+        loadingThread.join();
+      }
     } catch (const std::exception &e) {
       processingDone = true;
       if (loadingThread.joinable()) {
         loadingThread.join();
       }
-      cerr << "Erreur : " << e.what() << std::endl;
+      // erase "En cours de traitement..."
+      cout << "\r" << string(30, ' ') << "\r";
+      cerr << "Echec : " << e.what() << std::endl;
       cin.ignore();
       system("pause");
       return -1;

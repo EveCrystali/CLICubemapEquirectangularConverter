@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <string>
 
-
 namespace fs = std::filesystem;
 
 void verifyFolderExists(const std::string &folder);

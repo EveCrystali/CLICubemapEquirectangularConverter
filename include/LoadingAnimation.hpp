@@ -13,3 +13,4 @@ extern std::mutex coutMutex;
 
 // Declaration of the animation function
 void loadingAnimation();
+void stopAnimation();

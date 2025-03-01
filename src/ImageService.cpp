@@ -20,7 +20,7 @@ cv::Mat loadImage(const string &imagePath) {
     std::lock_guard<std::mutex> lock(coutMutex); // Empêche l'animation d'écrire
     pauseAnimation = true; // Stoppe l'animation temporairement
     std::cout << "\r" << std::string(30, ' ') << "\r"; // Efface l'animation
-    std::cout << "Image loaded: " << imagePath << std::endl;
+    std::cout << "Image chargée: " << imagePath << std::endl;
     pauseAnimation = false; // Relance l'animation
   }
   return image;
@@ -120,6 +120,9 @@ cv::Mat convertCubeMapEnEquirect(const vector<cv::Mat> &cubeFacesList) {
   auto end = chrono::high_resolution_clock::now();
   chrono::duration<double> diff = end - begin;
   processingDone = true;
+  stopAnimation();
+  std::cout << std::endl
+            << "Temps de calcul : " << diff.count() << " s" << std::endl;
   return destination;
 }
 
@@ -138,7 +141,6 @@ void saveImage(const cv::Mat &image, const string &filePath) {
   }
 
   std::lock_guard<std::mutex> lock(coutMutex); // Empêche l'animation d'écrire
-  pauseAnimation = true; // Stoppe l'animation temporairement
-  std::cout << "\r" << std::string(30, ' ') << "\r"; // Efface l'animation
+  stopAnimation();
   cout << "Image sauvegardée avec succès : " << filePath << endl;
 }
