@@ -136,8 +136,23 @@ void saveImage(const cv::Mat &image, const string &filePath) {
   verifyFolderExists(destinationFolder.string());
   verifyPermissions(destinationFolder);
 
+  // --- Apply Gaussian Blur ---
+  // Create a copy because the Gaussian blur changes the image.
+  cv::Mat blurredImage;
+  cv::GaussianBlur(image, blurredImage, cv::Size(3, 3), 0, 0);
+
+  // --- JPEG Compression Parameters ---
+  std::vector<int> compression_params;
+  compression_params.push_back(cv::IMWRITE_JPEG_QUALITY);
+  compression_params.push_back(
+      85); // Adjust the quality here (0-100, higher is better quality)
+  compression_params.push_back(cv::IMWRITE_JPEG_PROGRESSIVE);
+  compression_params.push_back(1);
+  compression_params.push_back(cv::IMWRITE_JPEG_OPTIMIZE);
+  compression_params.push_back(1);
+
   // Attempt to save the image
-  if (!cv::imwrite(filePath, image)) {
+  if (!cv::imwrite(filePath, blurredImage, compression_params)) {
     throw runtime_error("Impossible to save the image: " + filePath);
   }
 
