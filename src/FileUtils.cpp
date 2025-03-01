@@ -1,5 +1,6 @@
 #include "FileUtils.hpp"
 #include <stdexcept>
+#include <fstream>
 
 using namespace std;
 
@@ -12,12 +13,15 @@ void verifyFolderExists(const string &folder) {
 }
 
 void verifyPermissions(const fs::path &destinationFolder) {
-  auto perms = fs::status(destinationFolder).permissions();
-  if ((perms & fs::perms::owner_write) == fs::perms::none) {
-    throw runtime_error(
+  fs::path testFile = destinationFolder / "temp_permission_test.txt";
+  std::ofstream ofs(testFile.string());
+  if (!ofs) {
+    throw std::runtime_error(
         "You do not have the necessary permissions to write in the folder: " +
         destinationFolder.string());
   }
+  ofs.close();
+  fs::remove(testFile);
 }
 
 void verifyCubeMapFolder(const string &folder,

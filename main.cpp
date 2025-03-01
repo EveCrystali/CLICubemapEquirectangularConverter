@@ -78,11 +78,11 @@ int main() {
       // erase "En cours de traitement..."
       cout << "\r" << string(30, ' ') << "\r";
       cerr << "Echec : " << e.what() << std::endl;
-      cin.ignore();
+      
       system("pause");
       return -1;
     }
-    cin.ignore();
+    
     system("pause");
     return 0;
   }
