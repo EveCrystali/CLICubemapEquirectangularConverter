@@ -57,9 +57,9 @@ cv::Mat convertCubeMapEnEquirect(const vector<cv::Mat> &cubeFacesList) {
   cv::Mat negZ = cubeFacesList[4];
   cv::Mat posZ = cubeFacesList[5];
 
-  const int output_width = cubeFacesList[0].rows * 2;
-  const int output_height = cubeFacesList[0].rows;
-  const int square_length = output_height;
+  const int output_width = cubeFacesList[0].rows * 4;
+  const int output_height = cubeFacesList[0].rows * 2;
+  const int square_length = cubeFacesList[0].rows;
 
   // Placeholder image for the result
   cv::Mat destination(output_height, output_width, CV_8UC3,
