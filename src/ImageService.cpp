@@ -160,5 +160,9 @@ void saveImage(const cv::Mat &image, const string &filePath) {
   if (!cv::imwrite(filePath, image)) {
     throw runtime_error("Impossible to save the image: " + filePath);
   }
+
+  std::lock_guard<std::mutex> lock(coutMutex); // Empêche l'animation d'écrire
+  pauseAnimation = true; // Stoppe l'animation temporairement
+  std::cout << "\r" << std::string(30, ' ') << "\r"; // Efface l'animation
   cout << "Image sauvegardée avec succès : " << filePath << endl;
 }
