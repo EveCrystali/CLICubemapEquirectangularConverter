@@ -1,23 +1,11 @@
 #include "FileUtils.hpp"
 #include "ImageService.hpp"
-#include <iostream>
-#include <opencv2/opencv.hpp>
-#include <vector>
-#include <iostream>
-#include <thread>
-#include <atomic>
-
+#include "LoadingAnimation.hpp"
 
 using namespace std;
 
-//Is the process finished ?
-atomic<bool> processingDone(false); 
-// Animation 
-void loadingAnimation();
-
 int main() {
   {
-    
 
     // Active l'UTF-8 pour la console (fonctionne sur Windows)
     system("chcp 65001");
@@ -33,6 +21,9 @@ int main() {
     cout << "* Veuillez suivre les instructions ci-dessous :   *" << endl;
     cout << "***************************************************" << endl;
     cout << endl;
+
+    std::thread loadingThread;
+
     try {
 
       string cube_images_folder;
@@ -59,7 +50,8 @@ int main() {
         return -1;
       }
 
-      thread loadingThread(loadingAnimation);
+      // Start the loading animation
+      loadingThread = thread(loadingAnimation);
 
       // Initial verification in order to avoid useless processing
       const vector<string> expectedFiles = {"left.jpg",   "front.jpg",
@@ -74,10 +66,16 @@ int main() {
 
       cout << "Conversion terminée." << endl;
 
-      processingDone = true; // Signale la fin du traitement
-      loadingThread.join();  // Attend la fin du thread d'animation
+      // Signal the end of processing
+      processingDone = true;
+      // Wait for the loading animation to finish
+      loadingThread.join();
 
     } catch (const std::exception &e) {
+      processingDone = true;
+      if (loadingThread.joinable()) {
+        loadingThread.join();
+      }
       cerr << "Erreur : " << e.what() << std::endl;
       cin.ignore();
       system("pause");

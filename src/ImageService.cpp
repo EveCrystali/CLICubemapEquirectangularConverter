@@ -1,33 +1,9 @@
 #include "ImageService.hpp"
 #include "FileUtils.hpp"
+#include "LoadingAnimation.hpp"
 #include "cubeMap2Equrec.hpp"
-#include <chrono>
-#include <filesystem>
-#include <iostream>
-#include <mutex>
 
-namespace fs = std::filesystem;
 using namespace std;
-
-extern std::atomic<bool> processingDone;
-std::atomic<bool>
-    pauseAnimation(false); // Permet de stopper temporairement l'animation
-std::mutex coutMutex;      // Mutex pour synchroniser l'affichage
-
-void loadingAnimation() {
-  const char symbols[] = {'|', '/', '-', '\\'};
-  int i = 0;
-
-  while (!processingDone) {
-    if (!pauseAnimation) { // Ne met à jour que si `pauseAnimation` est `false`
-      std::lock_guard<std::mutex> lock(coutMutex);
-      std::cout << "\rProcessing... " << symbols[i % 4] << std::flush;
-      i++;
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-  }
-  std::cout << "\rProcessing... Done!    " << std::endl;
-}
 
 // Loads an image from a given path
 cv::Mat loadImage(const string &imagePath) {
