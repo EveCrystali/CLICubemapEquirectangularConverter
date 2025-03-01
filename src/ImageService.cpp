@@ -1,26 +1,56 @@
 #include "ImageService.hpp"
-#include "cubeMap2Equrec.hpp"
 
+namespace fs = std::filesystem;
 using namespace std;
 
-std::vector<cv::Mat> loadCubeMap(const std::string &imagesFolder) {
-  std::vector<std::string> faceNames = {"left.jpg", "front.jpg",  "right.jpg",
-                                        "back.jpg", "bottom.jpg", "top.jpg"};
-  std::vector<cv::Mat> cubeMapFacesList;
+// Checks if the folder exists and is a directory
+void verifyFolderExists(const string &folder) {
+  if (!fs::exists(folder) || !fs::is_directory(folder)) {
+    throw runtime_error("The folder does not exist or is not a directory: " +
+                        folder);
+  }
+}
 
-  for (const auto &faceName : faceNames) {
-    std::string imagePath = imagesFolder + "/" + faceName;
-    cv::Mat image = cv::imread(imagePath);
+// Returns the number of files in the folder
+size_t countFilesInFolder(const string &folder) {
+  return distance(fs::directory_iterator(folder), fs::directory_iterator{});
+}
 
-    if (image.empty()) {
-      throw std::runtime_error("Unable to load image : " + imagePath);
-    }
-
-    cubeMapFacesList.push_back(image);
-    std::cout << "Image loaded : " << imagePath << std::endl;
+// Loads an image from a given path
+cv::Mat loadImage(const string &imagePath) {
+  if (!fs::exists(imagePath) || !fs::is_regular_file(imagePath)) {
+    throw runtime_error("Missing or invalid image: " + imagePath);
   }
 
-  return cubeMapFacesList;
+  cv::Mat image = cv::imread(imagePath);
+  if (image.empty()) {
+    throw runtime_error("Unable to load the image: " + imagePath);
+  }
+
+  cout << "Image loaded: " << imagePath << endl;
+  return image;
+}
+
+// Loads the cube map using the previous functions
+vector<cv::Mat> loadCubeMap(const string &imagesFolder) {
+  // List of expected file names
+  const vector<string> faceNames = {"left.jpg", "front.jpg",  "right.jpg",
+                                    "back.jpg", "bottom.jpg", "top.jpg"};
+
+  // Basic checks
+  verifyFolderExists(imagesFolder);
+  if (countFilesInFolder(imagesFolder) <= 6) {
+    throw runtime_error("The folder must contain at least 6 images.");
+  }
+
+  // Loading the cube map images
+  vector<cv::Mat> cubeMapFaces;
+  for (const auto &face : faceNames) {
+    string imagePath = imagesFolder + "/" + face;
+    cubeMapFaces.push_back(loadImage(imagePath));
+  }
+
+  return cubeMapFaces;
 }
 
 cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat> &cubeFacesList) {

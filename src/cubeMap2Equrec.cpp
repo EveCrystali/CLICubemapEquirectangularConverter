@@ -1,6 +1,4 @@
 #include "cubeMap2Equrec.hpp"
-#include "ImageService.hpp"
-
 
 using namespace std;
 
