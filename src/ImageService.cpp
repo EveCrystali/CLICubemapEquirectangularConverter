@@ -1,19 +1,32 @@
 #include "ImageService.hpp"
+#include "FileUtils.hpp"
+#include "cubeMap2Equrec.hpp"
+#include <chrono>
+#include <filesystem>
+#include <iostream>
+#include <mutex>
 
 namespace fs = std::filesystem;
 using namespace std;
 
-// Checks if the folder exists and is a directory
-void verifyFolderExists(const string &folder) {
-  if (!fs::exists(folder) || !fs::is_directory(folder)) {
-    throw runtime_error("The folder does not exist or is not a directory: " +
-                        folder);
-  }
-}
+extern std::atomic<bool> processingDone;
+std::atomic<bool>
+    pauseAnimation(false); // Permet de stopper temporairement l'animation
+std::mutex coutMutex;      // Mutex pour synchroniser l'affichage
 
-// Returns the number of files in the folder
-size_t countFilesInFolder(const string &folder) {
-  return distance(fs::directory_iterator(folder), fs::directory_iterator{});
+void loadingAnimation() {
+  const char symbols[] = {'|', '/', '-', '\\'};
+  int i = 0;
+
+  while (!processingDone) {
+    if (!pauseAnimation) { // Ne met à jour que si `pauseAnimation` est `false`
+      std::lock_guard<std::mutex> lock(coutMutex);
+      std::cout << "\rProcessing... " << symbols[i % 4] << std::flush;
+      i++;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  }
+  std::cout << "\rProcessing... Done!    " << std::endl;
 }
 
 // Loads an image from a given path
@@ -27,7 +40,13 @@ cv::Mat loadImage(const string &imagePath) {
     throw runtime_error("Unable to load the image: " + imagePath);
   }
 
-  cout << "Image loaded: " << imagePath << endl;
+  {
+    std::lock_guard<std::mutex> lock(coutMutex); // Empêche l'animation d'écrire
+    pauseAnimation = true; // Stoppe l'animation temporairement
+    std::cout << "\r" << std::string(30, ' ') << "\r"; // Efface l'animation
+    std::cout << "Image loaded: " << imagePath << std::endl;
+    pauseAnimation = false; // Relance l'animation
+  }
   return image;
 }
 
@@ -36,13 +55,6 @@ vector<cv::Mat> loadCubeMap(const string &imagesFolder) {
   // List of expected file names
   const vector<string> faceNames = {"left.jpg", "front.jpg",  "right.jpg",
                                     "back.jpg", "bottom.jpg", "top.jpg"};
-
-  // Basic checks
-  verifyFolderExists(imagesFolder);
-  if (countFilesInFolder(imagesFolder) <= 6) {
-    throw runtime_error("The folder must contain at least 6 images.");
-  }
-
   // Loading the cube map images
   vector<cv::Mat> cubeMapFaces;
   for (const auto &face : faceNames) {
@@ -53,7 +65,7 @@ vector<cv::Mat> loadCubeMap(const string &imagesFolder) {
   return cubeMapFaces;
 }
 
-cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat> &cubeFacesList) {
+cv::Mat convertCubeMapEnEquirect(const vector<cv::Mat> &cubeFacesList) {
   // Correspondence of the cube map faces to their positions.
   // Extract images from cube map from a single file with the following format:
   //		+----+----+----+
@@ -129,17 +141,24 @@ cv::Mat convertCubeMapEnEquirect(const std::vector<cv::Mat> &cubeFacesList) {
       destination.at<cv::Vec3b>(i, j) = val;
     }
   }
-  auto end = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> diff = end - begin;
-
-  std::cout << "Processing time: " << diff.count() << " s" << std::endl;
-
+  auto end = chrono::high_resolution_clock::now();
+  chrono::duration<double> diff = end - begin;
+  processingDone = true;
   return destination;
 }
 
-void saveImage(const cv::Mat &image, const std::string &filePath) {
-  if (!imwrite(filePath, image)) {
-    throw std::runtime_error(
-        "Impossible de sauvegarder l'image dans le fichier : " + filePath);
+void saveImage(const cv::Mat &image, const string &filePath) {
+  if (image.empty()) {
+    throw runtime_error("The image is empty. Unable to save the image.");
   }
+
+  fs::path destinationFolder = fs::path(filePath).parent_path();
+  verifyFolderExists(destinationFolder.string());
+  verifyPermissions(destinationFolder);
+
+  // Attempt to save the image
+  if (!cv::imwrite(filePath, image)) {
+    throw runtime_error("Impossible to save the image: " + filePath);
+  }
+  cout << "Image sauvegardée avec succès : " << filePath << endl;
 }
