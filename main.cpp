@@ -29,7 +29,7 @@ int main() {
       string cube_images_folder;
       cout << "Entrez le dossier contenant les images (ou appuyez sur 'q' puis "
               "'entrée' pour quitter): ";
-      cin >> cube_images_folder;
+      getline(cin, cube_images_folder);
       if (cube_images_folder == "q") {
         cout << "Programme terminé." << endl;
         return 0;
@@ -39,7 +39,7 @@ int main() {
       cout << "Entrez le dossier de sauvegarde pour le résultat du panorama "
               "équirectangulaire (ou appuyez sur 'q' puis 'entrée' pour "
               "quitter): ";
-      cin >> panorama_result_folder;
+      getline(cin, panorama_result_folder);
       if (panorama_result_folder == "q") {
         cout << "Programme terminé." << endl;
         return 0;

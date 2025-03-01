@@ -7,11 +7,12 @@ using namespace std;
 
 // Loads an image from a given path
 cv::Mat loadImage(const string &imagePath) {
-  if (!fs::exists(imagePath) || !fs::is_regular_file(imagePath)) {
-    throw runtime_error("Missing or invalid image: " + imagePath);
+  fs::path path(imagePath);
+  if (!fs::exists(path) || !fs::is_regular_file(path)) {
+    throw runtime_error("Missing or invalid image: " + path.string());
   }
 
-  cv::Mat image = cv::imread(imagePath);
+  cv::Mat image = cv::imread(path.string());
   if (image.empty()) {
     throw runtime_error("Unable to load the image: " + imagePath);
   }
@@ -34,8 +35,8 @@ vector<cv::Mat> loadCubeMap(const string &imagesFolder) {
   // Loading the cube map images
   vector<cv::Mat> cubeMapFaces;
   for (const auto &face : faceNames) {
-    string imagePath = imagesFolder + "/" + face;
-    cubeMapFaces.push_back(loadImage(imagePath));
+    fs::path imagePath = fs::path(imagesFolder) / face;
+    cubeMapFaces.push_back(loadImage(imagePath.string()));
   }
 
   return cubeMapFaces;
