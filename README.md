@@ -59,7 +59,7 @@ Votre dossier doit contenir 6 images nommées :
 - right.jpg
 - top.jpg
 - bottom.jpg
-- 
+
 Le programme générera automatiquement une image panoramique.
 
 📸 Résultat attendu
