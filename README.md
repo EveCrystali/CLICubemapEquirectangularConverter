@@ -24,7 +24,10 @@ cd votre-repository
 
 ### 2️⃣ Installation des dépendances
 
-Le projet utilise CMake et OpenCV.
+Le projet utilise CMake et OpenCV. Assurez-vous que ces outils sont bien installés.
+
+- OpenCV : https://github.com/opencv/opencv
+- CMake 3.10+ : https://cmake.org/download/
 
 
 ### 3️⃣ Compilation
@@ -38,7 +41,7 @@ cmake ..
 cmake --build . --config Release
 ```
 
-L'exécutable sera généré dans le dossier build/Release.
+L'exécutable sera généré dans le dossier build/.
 
 ## 🚀 Utilisation
 
@@ -71,11 +74,15 @@ Exemple de sortie :
 
 ## 🛠️ Dépendances
 
-C++17
-OpenCV 4.x
-CMake 3.10+
+- C++17
+- OpenCV 4.x → https://github.com/opencv/opencv
+- CMake 3.10+ → https://cmake.org/download/
 
 ## 📝 License
 
-Ce projet est sous licence **GPL-2.0**.  
-Il utilise `Equirectangular-CubeMapTransform` (GPL-2.0), ce qui signifie que son exécutable doit être redistribué sous les termes de cette licence.
+Ce projet est sous licence GPL-2.0, ce qui signifie que tout code modifié ou redistribué doit respecter les termes de la GPL-2.0.
+
+🔹 Il utilise Equirectangular-CubeMapTransform, un projet également sous GPL-2.0 :
+https://github.com/ema2159/Equirectangular-CubeMapTransform.
+
+En conséquence, toute distribution de l’exécutable doit inclure le code source.
