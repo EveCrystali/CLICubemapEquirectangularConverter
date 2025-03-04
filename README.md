@@ -8,8 +8,7 @@ Il est conçu pour être **rapide et optimisé**, exploitant les performances du
 ## ✨ Fonctionnalités
 
 - 🔄 **Conversion rapide et précise** d'un cubemap en panorama équirectangulaire.
-- 📏 **Support des résolutions élevées** (ex: 5120x5120 par face).
-- 🎭 **Optimisation de la compression d'image** (JPEG & JPEG 2000 avec contrôle de qualité).
+- 🎭 **Optimisation de la compression d'image**.
 - ⚡ **Traitement optimisé** pour de meilleures performances.
 - 🛠️ **Interface en ligne de commande simple**.
 
